@@ -12,7 +12,7 @@
 
 ---
 ---
-## **Ros flow**
+## **Ros Checklist**
 ### **Prerequisites:**
 1. Run roscore
     * ```roscore```
