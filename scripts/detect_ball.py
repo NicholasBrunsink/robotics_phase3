@@ -31,7 +31,7 @@ def main():
 	
 	# create a focus window to isolate ball movement from background
 	crop_img = np.zeros((rgb_img.shape[0], rgb_img.shape[1], 1), dtype = "uint8")
-	crop_img = cv2.rectangle(crop_img, (120, 120), (crop_img.shape[1]-120, crop_img.shape[0]-120), 255, -1)
+	crop_img = cv2.rectangle(crop_img, (260, 120), (crop_img.shape[1]-120, crop_img.shape[0]-120), 255, -1)
 	
 	# set the loop frequency
 	rate = rospy.Rate(10)
@@ -55,13 +55,13 @@ def main():
 			if circles is not None:
 				ball = circles[0][0]
 				ball = np.uint16(np.around(ball)) 
-				cv2.circle(circ_detect, (ball[0], ball[1]), 1, 255, ball[2]*2)
+				cv2.circle(circ_detect, (ball[0], ball[1]), 1, 255, int(ball[2]*1.75))
 				
 				# draw circle on top of ball in original image
-				cv2.circle(cropped_hsv, (ball[0], ball[1]), 1, 255, ball[2]*2)
+				cv2.circle(cropped_hsv, (ball[0], ball[1]), 1, 255, int(ball[2]*1.5))
 			
 			# convert cropped img to ros msg and publish it
-			img_msg = CvBridge().cv2_to_imgmsg(cropped_hsv, encoding="mono8")
+			img_msg = CvBridge().cv2_to_imgmsg(circ_detect, encoding="mono8")
 			# publish final cropped img
 			img_pub.publish(img_msg)
 			

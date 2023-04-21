@@ -78,11 +78,10 @@ def main():
 			# initial point close to initial position
 			plan = createPoint(plan, toolpose.linear.x+0.001, toolpose.linear.y+0.001, toolpose.linear.z+0.001, toolpose.angular.x, toolpose.angular.y, toolpose.angular.z, 0) 		
 			# above ball
-			plan = createPoint(plan, sphere.xc, sphere.yc, toolpose.linear.z, toolpose.angular.x, toolpose.angular.y, toolpose.angular.z, 0)
+			plan = createPoint(plan, sphere.xc, sphere.yc, toolpose.linear.z, toolpose.angular.x, toolpose.angular.y, toolpose.angular.z, 1)
 			# grabbing ball
 			plan = createPoint(plan, sphere.xc+0.001, sphere.yc+0.001, sphere.zc+0.001, toolpose.angular.x, toolpose.angular.y, toolpose.angular.z, 0)
 			plan = createPoint(plan, sphere.xc, sphere.yc, sphere.zc, toolpose.angular.x, toolpose.angular.y, toolpose.angular.z, 2)
-			plan = createPoint(plan, sphere.xc+0.001, sphere.yc+0.001, sphere.zc+0.001, toolpose.angular.x, toolpose.angular.y, toolpose.angular.z, 0)
 			# above ball
 			plan = createPoint(plan, sphere.xc, sphere.yc, toolpose.linear.z, toolpose.angular.x, toolpose.angular.y, toolpose.angular.z, 0)
 			# move above drop position
@@ -90,7 +89,6 @@ def main():
 			# place ball
 			plan = createPoint(plan, sphere.xc+0.30, sphere.yc, sphere.zc+0.001, toolpose.angular.x, toolpose.angular.y, toolpose.angular.z, 0)
 			plan = createPoint(plan, sphere.xc+0.301, sphere.yc+0.001, sphere.zc, toolpose.angular.x, toolpose.angular.y, toolpose.angular.z, 1)
-			plan = createPoint(plan, sphere.xc+0.30, sphere.yc, sphere.zc+0.001, toolpose.angular.x, toolpose.angular.y, toolpose.angular.z, 0)
 			# above ball
 			plan = createPoint(plan, sphere.xc+0.300, sphere.yc, toolpose.linear.z, toolpose.angular.x, toolpose.angular.y, toolpose.angular.z, 0)
 			# move back to initial position
