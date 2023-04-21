@@ -18,7 +18,7 @@ toolpose = Twist()
 sphere = SphereParams()
 
 # initializing flag for determining when initialization is enabled
-toggleInit = False
+toggleInit = True
 
 def twist_callback(data):
 	'''
@@ -70,60 +70,55 @@ def main():
 	# subscriber for sphere in camera frame
 	sphereparam_sub = rospy.Subscriber('/sphere_params', SphereParams, sphere_callback)
 	
+	
+	# initialize SphereParams for publishing
+	exportSphere = SphereParams()
+	
+	# set loop rate to 10 Hz
+	loop_rate = rospy.Rate(10)
+	
+	print("Initializing")
 	while not rospy.is_shutdown():
-		# initialize SphereParams for publishing
-		exportSphere = SphereParams()
-
-		# hold execution until initialization is started
-		print("Waiting for initialization msg on /toggleInit")
-		while not rospy.is_shutdown() and not toggleInit:
-			pass
-		
-		# set loop rate to 10 Hz
-		loop_rate = rospy.Rate(10)
-		
-		print("Initializing")
-		while not rospy.is_shutdown():
-			if toggleInit:
-				# try getting the most update transformation between the tool frame and the base frame
-				try:
-					trans = tfBuffer.lookup_transform("base", "camera_color_optical_frame", rospy.Time())
-				except (tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException):
-					print('Frames not available!!!')
-					loop_rate.sleep()
-					continue
-				
-				# create a PointStamped based on the sphere location in the camera frame
-				pt_in_cam = tf2_geometry_msgs.PointStamped()
-				pt_in_cam.header.frame_id = 'camera_color_optical_frame'
-				pt_in_cam.header.stamp = rospy.get_rostime()
-				pt_in_cam.point.x = sphere.xc
-				pt_in_cam.point.y = sphere.yc
-				pt_in_cam.point.z = sphere.zc
-				# convert the 3D point to the base frame coordinates
-				pt_in_base = tfBuffer.transform(pt_in_cam,'base', rospy.Duration(1.0))
-				
-				# set new SphereParams based on base frame 
-				exportSphere.xc = pt_in_base.point.x
-				exportSphere.yc = pt_in_base.point.y
-				exportSphere.zc = pt_in_base.point.z
-				exportSphere.radius = sphere.radius
-					
-				print("\nSphere params")
-				print(exportSphere)
-				print("\nToolpose")
-				print(toolpose)
-				
-			else:
-				print("\nInitialized Sphere")
-				print(exportSphere)
-				print("\nInitialized Toolpoase")
-				print(toolpose)
+		if toggleInit:
+			# try getting the most update transformation between the tool frame and the base frame
+			try:
+				trans = tfBuffer.lookup_transform("base", "camera_color_optical_frame", rospy.Time())
+			except (tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException):
+				print('Frames not available!!!')
+				loop_rate.sleep()
+				continue
 			
-			# publishing exportSphere and toolpose for pickup_motion.py
-			sphere_pub.publish(exportSphere)
-			init_pub.publish(toolpose)
+			# create a PointStamped based on the sphere location in the camera frame
+			pt_in_cam = tf2_geometry_msgs.PointStamped()
+			pt_in_cam.header.frame_id = 'camera_color_optical_frame'
+			pt_in_cam.header.stamp = rospy.get_rostime()
+			pt_in_cam.point.x = sphere.xc
+			pt_in_cam.point.y = sphere.yc
+			pt_in_cam.point.z = sphere.zc
+			# convert the 3D point to the base frame coordinates
+			pt_in_base = tfBuffer.transform(pt_in_cam,'base', rospy.Duration(1.0))
 			
-			# wait for 0.1 seconds until the next loop and repeat
-			loop_rate.sleep()
+			# set new SphereParams based on base frame 
+			exportSphere.xc = pt_in_base.point.x
+			exportSphere.yc = pt_in_base.point.y
+			exportSphere.zc = pt_in_base.point.z
+			exportSphere.radius = sphere.radius
+				
+			print("\nSphere params")
+			print(exportSphere)
+			print("\nToolpose")
+			print(toolpose)
+			
+		else:
+			print("\nInitialized Sphere")
+			print(exportSphere)
+			print("\nInitialized Toolpose")
+			print(toolpose)
+		
+		# publishing exportSphere and toolpose for pickup_motion.py
+		sphere_pub.publish(exportSphere)
+		init_pub.publish(toolpose)
+		
+		# wait for 0.1 seconds until the next loop and repeat
+		loop_rate.sleep()
 main()

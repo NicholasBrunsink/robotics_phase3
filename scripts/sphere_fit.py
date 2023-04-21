@@ -9,7 +9,7 @@ from std_msgs.msg import Bool
 
 # List of points to estimate ball
 points = []
-initializing = False
+initializing = True
 
 # Callback function for /xyz_cropped_ball subscriber
 def get_ball(ballPoints):
@@ -80,7 +80,8 @@ def main():
 		p_out = gain*P[3][0] + (1-gain)*p_out
 		
 		if xc_out**2 + yc_out**2 + zc_out**2 + p_out < 0:
-			r_in = 0
+			rate.sleep()
+			continue
 		# set radius to calculated value is radius is not imaginary
 		else:
 			r_in = math.sqrt(xc_out**2 + yc_out**2 + zc_out**2 + p_out)
