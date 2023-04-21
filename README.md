@@ -32,8 +32,8 @@
       >```roslaunch realsense2_camera rs_rgbd.launch```
 5. Collect and process 2D and 3D data form camera
     * >```rosrun robot_vision_lectures crop_visualize_3D```
-    * >```rosrun robotics_report2 detect_ball.py```
-    * >```rosrun robotics_report2 sphere_fit.py```
+    * >```rosrun robotics_phase3 detect_ball.py```
+    * >```rosrun robotics_phase3 sphere_fit.py```
 6. Start Trajectory Calculator
     * >```rosrun ur5e_control task_space_traj```
 7. Start Frame Publisher
@@ -50,34 +50,49 @@
 
 ### **First**
 1. Start camera to robot frame converter
-    * >```rosrun robotics_report2 cam_to_bot.py```
+    * >```rosrun robotics_phase3 cam_to_bot.py```
 2. Start pickup_motion script to start generating plans
-    * >```rosrun robotics_report2 pickup_motion.py```
+    * >```rosrun robotics_phase3 pickup_motion.py```
 3. Leave both running
 
 ### **Then**
 1. Publish True to /toggleInit topic to begin sphere tracking and initial condition collection.
+    * CLI
+      >```rostopic pub /toggleInit std_msgs/Bool "data: true"```
 2. Run initialization script
     * In Simulator
-      >```rosrun robotics_report2 brun_init.py```
-    * Real Robot (if not auto initialized)
+      >```rosrun robotics_phase3 brun_init.py```
+    * Real Robot (if not already initialized)
       >```rosrun ur5e_control manual_initialization_real_robot.py```
 3. Wait for satisfactory initial conditions
 4. Stop initialization script
 5. Publish False to /toggleInit to stop initialization and pause tracking
+    * CLI
+      >```rostopic pub /toggleInit std_msgs/Bool "data: false"```
 6. Publish True to /toggleMove to begin the plan execution
+    * CLI
+      >```rostopic pub /toggleMove std_msgs/Bool "data: true"```
 
 ### **To Generate and execute a new plan**
 1. Stop ```ur5e_control task_space_traj``` node
 2. Publish False to /toggleMove to stop plan publishing
+    * CLI
+      >```rostopic pub /toggleMove std_msgs/Bool "data: false"```
 3. Publish True to /toggleInit to resume tracking
-4. Run initialization script (if not already in good position)
+    * CLI
+      >```rostopic pub /toggleInit std_msgs/Bool "data: true"```
+4. Stop ```ur5e_control ur5e_controller``` and Run initialization script (if not already in good position)
     * In Simulator
-      >```rosrun robotics_report2 brun_init.py```
+      >```rosrun robotics_phase3 brun_init.py```
     * Real Robot
       >```rosrun ur5e_control manual_initialization_real_robot.py```
-5. Stop initialization script when done
+5. Stop initialization script when done and restart ```ur5e_control ur5e_controller``` (only if 4 is done)
+    * >```roslaunch ur5e_control ur5e_controller.launch```
 6. Publish False to /toggleInit to pause tracking
+    * CLI: 
+      >```rostopic pub /toggleInit std_msgs/Bool "data: false"```
 7. Start trajectory calculator
     * >```rosrun ur5e_control task_space_traj```
 8. Publish True to /toggleMove to start new plan when ready
+    * CLI
+      >```rostopic pub /toggleMove std_msgs/Bool "data: true"```
